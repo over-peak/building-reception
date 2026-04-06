@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VISITOR ACCESS | SANビル 受付</title>
+    <style>
+        /* 基本設定 */
+        :root {
+            --primary-color: #333;
+            --accent-color: #000;
+            --bg-color: #ffffff;
+            --card-bg: #f9f9f9;
+            --text-main: #333;
+            --text-sub: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー・言語切替 */
+        header {
+            padding: 40px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .lang-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            background: none;
+            border: 1px solid #ccc;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #666;
+        }
+
+        .lang-btn.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* 検索セクション */
+        .search-container {
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px; /* iOSのズーム防止 */
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* テナントリスト */
+        .tenant-list {
+            padding: 0 20px 40px;
+        }
+
+        .tenant-card {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .room-number {
+            font-size: 14px;
+            color: var(--text-sub);
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .company-name {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        /* 連絡ボタン */
+        .contact-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-phone { background-color: #f4f4f4; color: #333; }
+        .btn-wechat { background-color: #07C160; color: #fff; }
+        .btn-line { background-color: #06C755; color: #fff; }
+
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* 非表示クラス */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
+        <button class="lang-btn" onclick="switchLang('en')">English</button>
+        <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+    </div>
+    <h1 id="mainTitle">受付 / Visitor Access</h1>
+</header>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="会社名または部屋番号で検索..." oninput="filterTenants()">
+</div>
+
+<div class="tenant-list" id="tenantList">
+    </div>
+
+<script>
+    /**
+     * 【テナントデータ】
+     * 修正・追加はこの配列の中身を書き換えてください。
+     */
+    const tenants = [
+        {
+            room: "101",
+            nameJa: "サンプル株式会社",
+            nameEn: "Sample Co., Ltd.",
+            nameZh: "样品有限公司",
+            phone: "0312345678",
+            wechat: "wechat_id_101",
+            line: "https://line.me/ti/p/example1",
+            isVisible: true
+        },
+        {
+            room: "202",
+            nameJa: "グローバル・デザイン",
+            nameEn: "Global Design Inc.",
+            nameZh: "环球设计公司",
+            phone: "0387654321",
+            wechat: "", // 空白の場合はボタンが表示されません
+            line: "https://line.me/ti/p/example2",
+            isVisible: true
+        },
+        {
+            room: "305",
+            nameJa: "アジア貿易",
+            nameEn: "Asia Trading Group",
+            nameZh: "亚洲贸易集团",
+            phone: "0355556666",
+            wechat: "asia_trading_wx",
+            line: "", 
+            isVisible: true
+        }
+    ];
+
+    let currentLang = 'ja';
+
+    const translations = {
+        ja: {
+            title: "受付 / Visitor Access",
+            placeholder: "会社名または部屋番号で検索...",
+            noResult: "該当する会社が見つかりません。",
+            call: "電話",
+            wechat: "WeChat",
+            line: "LINE"
+        },
+        en: {
+            title: "Visitor Access",
+            placeholder: "Search by company or room...",
+            noResult: "No results found.",
+            call: "Call",
+            wechat: "WeChat",
+            line: "LINE"
+        },
+        zh: {
+            title: "接待处 / Visitor Access",
+            placeholder: "按公司名称或房间号搜索...",
+            noResult: "未找到相关公司。",
+            call: "电话",
+            wechat: "微信",
+            line: "LINE"
+        }
+    };
+
+    function switchLang(lang) {
+        currentLang = lang;
+        
+        // ボタンの活性化状態を切り替え
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.toLowerCase().includes(lang === 'ja' ? '日本' : lang === 'en' ? 'eng' : '中')) {
+                btn.classList.add('active');
+            }
+        });
+
+        // テキストの更新
+        document.getElementById('mainTitle').innerText = translations[lang].title;
+        document.getElementById('searchInput').placeholder = translations[lang].placeholder;
+
+        renderTenants();
+    }
+
+    function renderTenants() {
+        const listElement = document.getElementById('tenantList');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        listElement.innerHTML = '';
+
+        const filtered = tenants.filter(t => {
+            if (!t.isVisible) return false;
+            const matchName = (t.nameJa + t.nameEn + t.nameZh).toLowerCase().includes(searchTerm);
+            const matchRoom = t.room.toLowerCase().includes(searchTerm);
+            return matchName || matchRoom;
+        });
+
+        if (filtered.length === 0) {
+            listElement.innerHTML = `<div class="no-result">${translations[currentLang].noResult}</div>`;
+            return;
+        }
+
+        filtered.forEach(t => {
+            const card = document.createElement('div');
+            card.className = 'tenant-card';
+
+            let companyName = t.nameJa;
+            if (currentLang === 'en') companyName = t.nameEn;
+            if (currentLang === 'zh') companyName = t.nameZh;
+
+            let buttons = '';
+            if (t.phone) {
+                buttons += `<a href="tel:${t.phone}" class="btn btn-phone">📞 ${translations[currentLang].call}</a>`;
+            }
+            if (t.wechat) {
+                // WeChatはIDコピーや遷移を想定（環境により挙動が異なるため、基本はリンクまたはID表示）
+                buttons += `<a href="weixin://dl/chat?${t.wechat}" class="btn btn-wechat">💬 ${translations[currentLang].wechat}</a>`;
+            }
+            if (t.line) {
+                buttons += `<a href="${t.line}" target="_blank" class="btn btn-line">🟢 ${translations[currentLang].line}</a>`;
+            }
+
+            card.innerHTML = `
+                <div class="room-number">${t.room}</div>
+                <div class="company-name">${companyName}</div>
+                <div class="contact-actions">${buttons}</div>
+            `;
+            listElement.appendChild(card);
+        });
+    }
+
+    function filterTenants() {
+        renderTenants();
+    }
+
+    // 初回レンダリング
+    renderTenants();
+</script>
+
+</body>
+</html>
