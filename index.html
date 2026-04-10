@@ -10,31 +10,65 @@
             --text-main: #1d1d1f; 
             --text-sub: #86868b;
             --border-color: #f5f5f7;
-            --color-phone: #1d1d1f;   
-            --color-wechat: #07C160;  
-            --color-line: #00b900;    
+            
+            /* ボタン色の再定義：差別化を強調 */
+            --color-phone: #1d1d1f;   /* 電話：漆黒 */
+            --color-wechat: #165e3b;  /* WeChat：彩度を落とした深緑 */
+            --color-line: #06C755;    /* LINE：標準的な明るい緑 */
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
         }
+
         header { padding: 60px 20px 30px; text-align: center; }
+
         .lang-switch { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
-        .lang-btn { background: #f5f5f7; border: none; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 20px; color: var(--text-sub); }
+
+        .lang-btn {
+            background: #f5f5f7; border: none; padding: 8px 16px; font-size: 12px;
+            font-weight: 600; cursor: pointer; border-radius: 20px; color: var(--text-sub);
+        }
+
         .lang-btn.active { background-color: var(--text-main); color: #fff; }
+
         h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 0; text-transform: uppercase; }
-        .search-container { padding: 10px 20px 20px; position: sticky; top: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); z-index: 100; }
-        #searchInput { width: 100%; padding: 18px; box-sizing: border-box; border: none; background: #f5f5f7; border-radius: 14px; font-size: 16px; outline: none; }
+
+        .search-container {
+            padding: 10px 20px 20px; position: sticky; top: 0;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); z-index: 100;
+        }
+
+        #searchInput {
+            width: 100%; padding: 18px; box-sizing: border-box; border: none;
+            background: #f5f5f7; border-radius: 14px; font-size: 16px; outline: none;
+        }
+
         .tenant-list { padding: 20px 20px 80px; }
+
         .tenant-card { padding: 35px 0; border-bottom: 1px solid var(--border-color); }
+
         .room-number { font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px; }
+
         .company-name { font-size: 20px; font-weight: 700; margin-bottom: 22px; }
+
         .contact-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-        .btn { flex: 1; min-width: 95px; height: 52px; text-decoration: none; font-size: 14px; font-weight: 700; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; transition: transform 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+
+        .btn {
+            flex: 1; min-width: 95px; height: 52px; text-decoration: none; font-size: 14px;
+            font-weight: 700; border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; border: none; transition: transform 0.1s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
+        }
+
         .btn:active { transform: scale(0.96); }
+
+        /* ボタン個別色 */
         .btn-phone { background-color: var(--color-phone); color: #ffffff; }
         .btn-wechat { background-color: var(--color-wechat); color: #ffffff; }
         .btn-line { background-color: var(--color-line); color: #ffffff; }
+
         .no-result { text-align: center; padding: 60px; color: var(--text-sub); }
     </style>
 </head>
@@ -56,7 +90,6 @@
 <div class="tenant-list" id="tenantList"></div>
 
 <script>
-    // テナントデータ（1F〜5Fのみ）
     const tenants = [
         { room: "1F", nameJa: "株式会社overpeak", nameEn: "overpeak Inc.", nameZh: "overpeak", phone: "", wechat: "", line: "", isVisible: true },
         { room: "202", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true },
