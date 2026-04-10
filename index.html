@@ -10,11 +10,9 @@
             --text-main: #1d1d1f; 
             --text-sub: #86868b;
             --border-color: #f5f5f7;
-            
-            /* 【配色：自然なコントラストに再調整】 */
             --color-phone: #1d1d1f;   /* 電話：漆黒 */
-            --color-wechat: #225a41;  /* WeChat：落ち着いた深緑（フォレストグリーン） */
             --color-line: #06C755;    /* LINE：鮮やかなブランドグリーン */
+            --color-wechat: #225a41;  /* WeChat：落ち着いた深緑 */
         }
 
         body {
@@ -65,8 +63,8 @@
         .btn:active { transform: scale(0.96); }
 
         .btn-phone { background-color: var(--color-phone); color: #ffffff; }
-        .btn-wechat { background-color: var(--color-wechat); color: #ffffff; }
         .btn-line { background-color: var(--color-line); color: #ffffff; }
+        .btn-wechat { background-color: var(--color-wechat); color: #ffffff; }
 
         .no-result { text-align: center; padding: 60px; color: var(--text-sub); }
     </style>
@@ -89,6 +87,7 @@
 <div class="tenant-list" id="tenantList"></div>
 
 <script>
+    // テナントデータ
     const tenants = [
         { room: "1F", nameJa: "株式会社overpeak", nameEn: "overpeak Inc.", nameZh: "overpeak", phone: "", wechat: "", line: "", isVisible: true },
         { room: "202", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true },
@@ -104,7 +103,7 @@
         { room: "307", nameJa: "越大株式会社", nameEn: "Etsudai Co., Ltd.", nameZh: "越大株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "308", nameJa: "聚儷源株式会社", nameEn: "Shureigen Co., Ltd.", nameZh: "聚俪源株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "309", nameJa: "京吉洲株式会社", nameEn: "Kyokishuu Co., Ltd.", nameZh: "京吉洲株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "310", nameJa: "ALL LINK会社設立", nameEn: "ALL LINK Inc.", nameZh: "ALL LINK公司设立", phone: "", wechat: "", line: "", isVisible: true },
+        { room: "310", nameJa: "ALL LINK会社設立", nameEn: "ALL LINK Inc.", nameZh: "ALL LINK公司設立", phone: "", wechat: "", line: "", isVisible: true },
         { room: "401", nameJa: "合衆株式会社", nameEn: "Gasshu Co., Ltd.", nameZh: "合众株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "402", nameJa: "ウチュウ貿易株式会社", nameEn: "Uchuu Trading Co., Ltd.", nameZh: "宇宙贸易株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "403", nameJa: "HELIOS株式会社", nameEn: "HELIOS Co., Ltd.", nameZh: "HELIOS株式会社", phone: "", wechat: "", line: "", isVisible: true },
@@ -123,9 +122,9 @@
 
     let currentLang = 'ja';
     const translations = {
-        ja: { title: "受付 / VISITOR ACCESS", placeholder: "会社名または部屋番号で検索...", call: "電話する", wechat: "WeChat", line: "LINE", copied: "コピーしました", noResult: "該当する会社が見つかりません。", comingSoon: "準備中" },
-        en: { title: "VISITOR ACCESS", placeholder: "Search...", call: "Call", wechat: "WeChat", line: "LINE", copied: "Copied", noResult: "No results found.", comingSoon: "Coming Soon" },
-        zh: { title: "接待处 / VISITOR ACCESS", placeholder: "搜索...", call: "电话", wechat: "微信", line: "LINE", copied: "已复制", noResult: "未找到相关公司。", comingSoon: "準備中" }
+        ja: { title: "受付 / VISITOR ACCESS", placeholder: "会社名または部屋番号で検索...", call: "電話する", wechat: "WeChat", line: "LINE", copied: "コピーしました", noResult: "該当する会社が見つかりません。" },
+        en: { title: "VISITOR ACCESS", placeholder: "Search...", call: "Call", wechat: "WeChat", line: "LINE", copied: "Copied", noResult: "No results found." },
+        zh: { title: "接待处 / VISITOR ACCESS", placeholder: "搜索...", call: "电话", wechat: "微信", line: "LINE", copied: "已复制", noResult: "未找到相关公司。" }
     };
 
     function switchLang(lang) {
@@ -138,22 +137,11 @@
         renderTenants();
     }
 
-    function handlePhone(number) {
-        if (!number) { alert(translations[currentLang].comingSoon); return; }
-        window.location.href = "tel:" + number;
-    }
-
     function handleWeChat(id) {
-        if (!id) { alert(translations[currentLang].comingSoon); return; }
         navigator.clipboard.writeText(id).then(() => {
             alert(translations[currentLang].copied + ": " + id);
             window.location.href = "weixin://";
         });
-    }
-
-    function handleLine(url) {
-        if (!url) { alert(translations[currentLang].comingSoon); return; }
-        window.location.href = url;
     }
 
     function renderTenants() {
@@ -173,13 +161,18 @@
             card.className = 'tenant-card';
             const name = currentLang === 'ja' ? t.nameJa : (currentLang === 'en' ? t.nameEn : t.nameZh);
             
+            // 各ボタンのHTML。データが空の場合は追加されない
+            let btnPhone = t.phone ? `<a href="tel:${t.phone}" class="btn btn-phone">${translations[currentLang].call}</a>` : '';
+            let btnLine = t.line ? `<a href="${t.line}" target="_blank" class="btn btn-line">${translations[currentLang].line}</a>` : '';
+            let btnWechat = t.wechat ? `<button onclick="handleWeChat('${t.wechat}')" class="btn btn-wechat">${translations[currentLang].wechat}</button>` : '';
+
             card.innerHTML = `
                 <div class="room-number">${t.room}</div>
                 <div class="company-name">${name}</div>
                 <div class="contact-actions">
-                    <button onclick="handlePhone('${t.phone}')" class="btn btn-phone">${translations[currentLang].call}</button>
-                    <button onclick="handleWeChat('${t.wechat}')" class="btn btn-wechat">${translations[currentLang].wechat}</button>
-                    <button onclick="handleLine('${t.line}')" class="btn btn-line">${translations[currentLang].line}</button>
+                    ${btnPhone}
+                    ${btnLine}
+                    ${btnWechat}
                 </div>
             `;
             listElement.appendChild(card);
