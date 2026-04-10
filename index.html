@@ -11,10 +11,10 @@
             --text-sub: #86868b;
             --border-color: #f5f5f7;
             
-            /* ボタン色の再定義：差別化を強調 */
+            /* 【配色：差別化の最大化】 */
             --color-phone: #1d1d1f;   /* 電話：漆黒 */
-            --color-wechat: #165e3b;  /* WeChat：彩度を落とした深緑 */
-            --color-line: #06C755;    /* LINE：標準的な明るい緑 */
+            --color-wechat: #2c3e35;  /* WeChat：極限まで彩度を落としたダークモス */
+            --color-line: #06C755;    /* LINE：鮮やかなブランドグリーン */
         }
 
         body {
@@ -64,9 +64,9 @@
 
         .btn:active { transform: scale(0.96); }
 
-        /* ボタン個別色 */
+        /* ボタン個別色：暗さと彩度の差を強調 */
         .btn-phone { background-color: var(--color-phone); color: #ffffff; }
-        .btn-wechat { background-color: var(--color-wechat); color: #ffffff; }
+        .btn-wechat { background-color: var(--color-wechat); color: #ffffff; opacity: 0.95; }
         .btn-line { background-color: var(--color-line); color: #ffffff; }
 
         .no-result { text-align: center; padding: 60px; color: var(--text-sub); }
