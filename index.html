@@ -87,10 +87,9 @@
 <div class="tenant-list" id="tenantList"></div>
 
 <script>
-    // テナントデータ
+    // テナントデータ（部屋番号順に並び替え完了）
     const tenants = [
         { room: "1F", nameJa: "株式会社overpeak", nameEn: "overpeak Inc.", nameZh: "overpeak", phone: "080-1052-3849", wechat: "hinako0111", line: "https://line.me/ti/p/CVCJ5-WqRQ", isVisible: true },
-        { room: "505", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "203", nameJa: "聞瀾株式会社", nameEn: "Bunran Co., Ltd.", nameZh: "闻澜株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "204", nameJa: "楽の夢株式会社", nameEn: "Rakunoyume Co., Ltd.", nameZh: "乐之梦株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "206", nameJa: "達納得株式会社", nameEn: "Tatsunattoku Co., Ltd.", nameZh: "达納得株式会社", phone: "", wechat: "", line: "", isVisible: true },
@@ -117,7 +116,8 @@
         { room: "501", nameJa: "恒昇栄順株式会社", nameEn: "Koushou Eishun Co., Ltd.", nameZh: "恒升荣顺株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "502", nameJa: "Astrosia International株式会社", nameEn: "Astrosia International Co., Ltd.", nameZh: "Astrosia International株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "503", nameJa: "以太株式会社", nameEn: "Itai Co., Ltd.", nameZh: "以太株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "504", nameJa: "碧発株式会社", nameEn: "Hekihatsu Co., Ltd.", nameZh: "碧发株式会社", phone: "", wechat: "", line: "", isVisible: true }
+        { room: "504", nameJa: "碧発株式会社", nameEn: "Hekihatsu Co., Ltd.", nameZh: "碧发株式会社", phone: "", wechat: "", line: "", isVisible: true },
+        { room: "505", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true }
     ];
 
     let currentLang = 'ja';
