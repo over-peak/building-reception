@@ -73,9 +73,9 @@
 
 <header>
     <div class="lang-switch">
-        <button class="lang-btn active" onclick="switchLang('ja')">日本語</button>
-        <button class="lang-btn" onclick="switchLang('en')">English</button>
-        <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+        <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')">日本語</button>
+        <button class="lang-btn" data-lang="en" onclick="switchLang('en')">English</button>
+        <button class="lang-btn" data-lang="zh" onclick="switchLang('zh')">中文</button>
     </div>
     <h1 id="mainTitle">受付 / VISITOR ACCESS</h1>
 </header>
@@ -90,7 +90,7 @@
     // テナントデータ
     const tenants = [
         { room: "1F", nameJa: "株式会社overpeak", nameEn: "overpeak Inc.", nameZh: "overpeak", phone: "080-1052-3849", wechat: "hinako0111", line: "https://line.me/ti/p/CVCJ5-WqRQ", isVisible: true },
-        { room: "202", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true },
+        { room: "505", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "203", nameJa: "聞瀾株式会社", nameEn: "Bunran Co., Ltd.", nameZh: "闻澜株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "204", nameJa: "楽の夢株式会社", nameEn: "Rakunoyume Co., Ltd.", nameZh: "乐之梦株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "206", nameJa: "達納得株式会社", nameEn: "Tatsunattoku Co., Ltd.", nameZh: "达納得株式会社", phone: "", wechat: "", line: "", isVisible: true },
@@ -112,7 +112,7 @@
         { room: "406", nameJa: "鴻瑞株式会社", nameEn: "Kouzui Co., Ltd.", nameZh: "鸿瑞株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "408", nameJa: "彦雄株式会社", nameEn: "Genyu Co., Ltd.", nameZh: "彦雄株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "409", nameJa: "井同株式会社", nameEn: "Seidou Co., Ltd.", nameZh: "井同株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "410", nameJa: "維動国際株式会社", nameEn: "Idou International Co., Ltd.", nameZh: "维动国際株式会社", phone: "", wechat: "", line: "", isVisible: true },
+        { room: "410", nameJa: "維動国際株式会社", nameEn: "Idou International Co., Ltd.", nameZh: "維動国際株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "412", nameJa: "丸嘉株式会社", nameEn: "Maruka Co., Ltd.", nameZh: "丸嘉株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "501", nameJa: "恒昇栄順株式会社", nameEn: "Koushou Eishun Co., Ltd.", nameZh: "恒升荣顺株式会社", phone: "", wechat: "", line: "", isVisible: true },
         { room: "502", nameJa: "Astrosia International株式会社", nameEn: "Astrosia International Co., Ltd.", nameZh: "Astrosia International株式会社", phone: "", wechat: "", line: "", isVisible: true },
@@ -130,7 +130,7 @@
     function switchLang(lang) {
         currentLang = lang;
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(lang === 'ja' ? '日本' : lang === 'en' ? 'eng' : '中'));
+            btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
         });
         document.getElementById('mainTitle').innerText = translations[lang].title;
         document.getElementById('searchInput').placeholder = translations[lang].placeholder;
