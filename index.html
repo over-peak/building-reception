@@ -9,15 +9,12 @@
             --bg-color: #ffffff;
             --text-main: #1d1d1f; 
             --text-sub: #86868b;
-            --border-color: #f5f5f7;
-            --color-phone: #1d1d1f;   /* 電話：漆黒 */
-            --color-line: #06C755;    /* LINE：鮮やかなブランドグリーン */
-            --color-wechat: #225a41;  /* WeChat：落ち着いた深緑 */
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
+            display: flex; flex-direction: column; min-height: 100vh;
         }
 
         header { padding: 60px 20px 30px; text-align: center; }
@@ -27,46 +24,31 @@
         .lang-btn {
             background: #f5f5f7; border: none; padding: 8px 16px; font-size: 12px;
             font-weight: 600; cursor: pointer; border-radius: 20px; color: var(--text-sub);
+            transition: all 0.2s;
         }
 
         .lang-btn.active { background-color: var(--text-main); color: #fff; }
 
-        h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 0; text-transform: uppercase; }
-
-        .search-container {
-            padding: 10px 20px 20px; position: sticky; top: 0;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); z-index: 100;
+        /* 準備中画面のメインコンテナ */
+        .maintenance-container {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 20px 40px 120px; text-align: center;
         }
 
-        #searchInput {
-            width: 100%; padding: 18px; box-sizing: border-box; border: none;
-            background: #f5f5f7; border-radius: 14px; font-size: 16px; outline: none;
+        .building-name {
+            font-size: 14px; font-weight: 700; color: var(--text-sub);
+            letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;
         }
 
-        .tenant-list { padding: 20px 20px 80px; }
-
-        .tenant-card { padding: 35px 0; border-bottom: 1px solid var(--border-color); }
-
-        .room-number { font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px; }
-
-        .company-name { font-size: 20px; font-weight: 700; margin-bottom: 22px; }
-
-        .contact-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-
-        .btn {
-            flex: 1; min-width: 95px; height: 52px; text-decoration: none; font-size: 14px;
-            font-weight: 700; border-radius: 12px; display: flex; align-items: center;
-            justify-content: center; border: none; transition: transform 0.1s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
+        .status-title {
+            font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+            margin: 0 0 16px 0; line-height: 1.3;
         }
 
-        .btn:active { transform: scale(0.96); }
-
-        .btn-phone { background-color: var(--color-phone); color: #ffffff; }
-        .btn-line { background-color: var(--color-line); color: #ffffff; }
-        .btn-wechat { background-color: var(--color-wechat); color: #ffffff; }
-
-        .no-result { text-align: center; padding: 60px; color: var(--text-sub); }
+        .status-desc {
+            font-size: 15px; color: var(--text-sub); max-width: 320px;
+            margin: 0; line-height: 1.6; font-weight: 400;
+        }
     </style>
 </head>
 <body>
@@ -77,108 +59,43 @@
         <button class="lang-btn" data-lang="en" onclick="switchLang('en')">English</button>
         <button class="lang-btn" data-lang="zh" onclick="switchLang('zh')">中文</button>
     </div>
-    <h1 id="mainTitle">受付 / VISITOR ACCESS</h1>
 </header>
 
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="会社名または部屋番号で検索..." oninput="renderTenants()">
+<div class="maintenance-container">
+    <div class="building-name">SAN BLDG.</div>
+    <h1 class="status-title" id="statusTitle">ただいま準備中です</h1>
+    <p class="status-desc" id="statusDesc">新システム導入に伴い、現在データを整備しております。運用開始までしばらくお待ちください。</p>
 </div>
 
-<div class="tenant-list" id="tenantList"></div>
-
 <script>
-    // テナントデータ（部屋番号順に並び替え完了）
-    const tenants = [
-        { room: "1F", nameJa: "株式会社overpeak", nameEn: "overpeak Inc.", nameZh: "overpeak", phone: "080-1052-3849", wechat: "hinako0111", line: "https://line.me/ti/p/CVCJ5-WqRQ", isVisible: true },
-        { room: "203", nameJa: "聞瀾株式会社", nameEn: "Bunran Co., Ltd.", nameZh: "闻澜株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "204", nameJa: "楽の夢株式会社", nameEn: "Rakunoyume Co., Ltd.", nameZh: "乐之梦株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "206", nameJa: "達納得株式会社", nameEn: "Tatsunattoku Co., Ltd.", nameZh: "达納得株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "208", nameJa: "HARUYA貿易株式会社", nameEn: "HARUYA Trading Co., Ltd.", nameZh: "HARUYA贸易株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "301", nameJa: "大田株式会社", nameEn: "Oota Co., Ltd.", nameZh: "大田株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "303", nameJa: "興宜坊株式会社", nameEn: "Kougibou Co., Ltd.", nameZh: "兴宜坊株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "304", nameJa: "日本岐黄健康株式会社", nameEn: "Japan Kikou Health Co., Ltd.", nameZh: "日本岐黄健康株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "305", nameJa: "本益株式会社", nameEn: "Honeki Co., Ltd.", nameZh: "本益株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "306", nameJa: "京誠国際株式会社", nameEn: "Kyosei International Co., Ltd.", nameZh: "京诚国际株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "307", nameJa: "越大株式会社", nameEn: "Etsudai Co., Ltd.", nameZh: "越大株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "308", nameJa: "聚儷源株式会社", nameEn: "Shureigen Co., Ltd.", nameZh: "聚俪源株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "309", nameJa: "京吉洲株式会社", nameEn: "Kyokishuu Co., Ltd.", nameZh: "京吉洲株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "310", nameJa: "ALL LINK会社設立", nameEn: "ALL LINK Inc.", nameZh: "ALL LINK公司設立", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "401", nameJa: "合衆株式会社", nameEn: "Gasshu Co., Ltd.", nameZh: "合众株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "402", nameJa: "ウチュウ貿易株式会社", nameEn: "Uchuu Trading Co., Ltd.", nameZh: "宇宙贸易株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "403", nameJa: "HELIOS株式会社", nameEn: "HELIOS Co., Ltd.", nameZh: "HELIOS株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "404", nameJa: "建平株式会社", nameEn: "Kenpei Co., Ltd.", nameZh: "建平株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "405", nameJa: "星星株式会社", nameEn: "Seisei Co., Ltd.", nameZh: "星星株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "406", nameJa: "鴻瑞株式会社", nameEn: "Kouzui Co., Ltd.", nameZh: "鸿瑞株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "408", nameJa: "彦雄株式会社", nameEn: "Genyu Co., Ltd.", nameZh: "彦雄株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "409", nameJa: "井同株式会社", nameEn: "Seidou Co., Ltd.", nameZh: "井同株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "410", nameJa: "維動国際株式会社", nameEn: "Idou International Co., Ltd.", nameZh: "維動国際株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "412", nameJa: "丸嘉株式会社", nameEn: "Maruka Co., Ltd.", nameZh: "丸嘉株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "501", nameJa: "恒昇栄順株式会社", nameEn: "Koushou Eishun Co., Ltd.", nameZh: "恒升荣顺株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "502", nameJa: "Astrosia International株式会社", nameEn: "Astrosia International Co., Ltd.", nameZh: "Astrosia International株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "503", nameJa: "以太株式会社", nameEn: "Itai Co., Ltd.", nameZh: "以太株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "504", nameJa: "碧発株式会社", nameEn: "Hekihatsu Co., Ltd.", nameZh: "碧发株式会社", phone: "", wechat: "", line: "", isVisible: true },
-        { room: "505", nameJa: "禎楽株式会社", nameEn: "Teiraku Co., Ltd.", nameZh: "祯乐株式会社", phone: "", wechat: "", line: "", isVisible: true }
-    ];
-
     let currentLang = 'ja';
+    
+    // 3カ国語の文言定義
     const translations = {
-        ja: { title: "受付 / VISITOR ACCESS", placeholder: "会社名または部屋番号で検索...", call: "電話する", wechat: "WeChat", line: "LINE", copied: "コピーしました", noResult: "該当する会社が見つかりません。" },
-        en: { title: "VISITOR ACCESS", placeholder: "Search...", call: "Call", wechat: "WeChat", line: "LINE", copied: "Copied", noResult: "No results found." },
-        zh: { title: "接待处 / VISITOR ACCESS", placeholder: "搜索...", call: "电话", wechat: "微信", line: "LINE", copied: "已复制", noResult: "未找到相关公司。" }
+        ja: {
+            title: "ただいま準備中です",
+            desc: "新システム導入に伴い、現在データを整備しております。運用開始までしばらくお待ちください。"
+        },
+        en: {
+            title: "Under Construction",
+            desc: "We are currently setting up the data for the new reception system. Thank you for your patience."
+        },
+        zh: {
+            title: "系统正在准备中",
+            desc: "伴随新系统的导入，目前正在整理入驻企业的数据。请稍等片刻，直至系统正式启用。"
+        }
     };
 
     function switchLang(lang) {
         currentLang = lang;
+        // ボタンの切り替え
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
         });
-        document.getElementById('mainTitle').innerText = translations[lang].title;
-        document.getElementById('searchInput').placeholder = translations[lang].placeholder;
-        renderTenants();
+        // テキストの切り替え
+        document.getElementById('statusTitle').innerText = translations[lang].title;
+        document.getElementById('statusDesc').innerText = translations[lang].desc;
     }
-
-    function handleWeChat(id) {
-        navigator.clipboard.writeText(id).then(() => {
-            alert(translations[currentLang].copied + ": " + id);
-            window.location.href = "weixin://";
-        });
-    }
-
-    function renderTenants() {
-        const listElement = document.getElementById('tenantList');
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        listElement.innerHTML = '';
-
-        const filtered = tenants.filter(t => t.isVisible && (t.nameJa + t.nameEn + t.nameZh + t.room).toLowerCase().includes(searchTerm));
-
-        if (filtered.length === 0) {
-            listElement.innerHTML = `<div class="no-result">${translations[currentLang].noResult}</div>`;
-            return;
-        }
-
-        filtered.forEach(t => {
-            const card = document.createElement('div');
-            card.className = 'tenant-card';
-            const name = currentLang === 'ja' ? t.nameJa : (currentLang === 'en' ? t.nameEn : t.nameZh);
-            
-            // 各ボタンのHTML。データが空の場合は追加されない
-            let btnPhone = t.phone ? `<a href="tel:${t.phone}" class="btn btn-phone">${translations[currentLang].call}</a>` : '';
-            let btnLine = t.line ? `<a href="${t.line}" target="_blank" class="btn btn-line">${translations[currentLang].line}</a>` : '';
-            let btnWechat = t.wechat ? `<button onclick="handleWeChat('${t.wechat}')" class="btn btn-wechat">${translations[currentLang].wechat}</button>` : '';
-
-            card.innerHTML = `
-                <div class="room-number">${t.room}</div>
-                <div class="company-name">${name}</div>
-                <div class="contact-actions">
-                    ${btnPhone}
-                    ${btnLine}
-                    ${btnWechat}
-                </div>
-            `;
-            listElement.appendChild(card);
-        });
-    }
-    renderTenants();
 </script>
 </body>
 </html>
